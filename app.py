@@ -17,7 +17,8 @@ def download_video(url, format="mp4", quality="best"):
         'format': 'bestvideo+bestaudio/best' if format == "mp4" else 'bestaudio/best',
         'merge_output_format': format,
         'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
-        'quiet': True
+        'quiet': True,
+        'cookiefile': "cookies.txt"  # Use the cookies file!
     }
 
     with YoutubeDL(options) as ydl:
