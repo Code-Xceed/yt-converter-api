@@ -11,17 +11,18 @@ DOWNLOAD_FOLDER = "downloads"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 def download_video(url, format="mp4"):
-    """Downloads YouTube video/audio using yt_dlp with cookies.txt"""
+    """Downloads YouTube video/audio using yt-dlp with cookies.txt"""
 
-    # Path to cookies.txt (ensure it's in the same folder as app.py)
-    cookies_path = os.path.join(os.path.dirname(__file__), "cookies.txt")
+    # Absolute path to cookies.txt (this ensures yt-dlp finds it)
+    cookies_path = os.path.abspath("cookies.txt")
 
     options = {
         'format': 'bestvideo+bestaudio/best' if format == "mp4" else 'bestaudio/best',
         'merge_output_format': format,
         'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
-        'quiet': True,
-        'cookiefile': cookies_path  # Correct way to use cookies
+        'quiet': False,  # Change to False to debug yt-dlp output
+        'cookiefile': cookies_path,  # Force yt-dlp to use cookies
+        'noprogress': True  # Removes unnecessary logs
     }
 
     try:
@@ -31,6 +32,7 @@ def download_video(url, format="mp4"):
             return filename
     except Exception as e:
         return str(e)
+
 
 @app.route('/')
 def home():
