@@ -13,15 +13,12 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 def download_video(url, format="mp4"):
     """Downloads YouTube video/audio using yt-dlp with cookies.txt"""
 
-    # Absolute path to cookies.txt
-    cookies_path = os.path.abspath("cookies.txt")
-
     options = {
         'format': 'bestvideo+bestaudio/best' if format == "mp4" else 'bestaudio/best',
         'merge_output_format': format,
         'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
         'quiet': False,  # Turn off quiet mode for debugging
-        'cookiefile': cookies_path,  # Force yt-dlp to use cookies
+        'cookiefile': cookies.txt,  # Force yt-dlp to use cookies
         'noprogress': True,  # Remove unnecessary logs
         'verbose': True  # Enable debug mode
     }
