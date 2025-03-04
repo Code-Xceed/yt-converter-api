@@ -1,10 +1,10 @@
 import os
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Add CORS support
+from flask_cors import CORS  # Enable CORS for frontend
 from yt_dlp import YoutubeDL
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend requests
+CORS(app)  # Allow frontend to access API
 
 # Define download folder
 DOWNLOAD_FOLDER = "downloads"
@@ -13,7 +13,7 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 def download_video(url, format="mp4"):
     """Downloads YouTube video/audio using yt_dlp with cookies.txt"""
 
-    # Path to cookies.txt
+    # Path to cookies.txt (ensure it's in the same folder as app.py)
     cookies_path = os.path.join(os.path.dirname(__file__), "cookies.txt")
 
     options = {
@@ -21,13 +21,16 @@ def download_video(url, format="mp4"):
         'merge_output_format': format,
         'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
         'quiet': True,
-        'cookiefile': cookies.txt # Use the cookies.txt file
+        'cookiefile': cookies_path  # Correct way to use cookies
     }
 
-    with YoutubeDL(options) as ydl:
-        info = ydl.extract_info(url, download=True)
-        filename = ydl.prepare_filename(info)
-        return filename
+    try:
+        with YoutubeDL(options) as ydl:
+            info = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info)
+            return filename
+    except Exception as e:
+        return str(e)
 
 @app.route('/')
 def home():
@@ -37,7 +40,6 @@ def home():
 def check_cookies():
     cookies_path = os.path.join(os.path.dirname(__file__), "cookies.txt")
     return jsonify({"cookies_file_exists": os.path.exists(cookies_path)})
-
 
 @app.route('/download', methods=['POST'])
 def download():
