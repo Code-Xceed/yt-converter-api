@@ -33,6 +33,12 @@ def download_video(url, format="mp4"):
 def home():
     return "YT Converter API is running!"
 
+@app.route('/check-cookies')
+def check_cookies():
+    cookies_path = os.path.join(os.path.dirname(__file__), "cookies.txt")
+    return jsonify({"cookies_file_exists": os.path.exists(cookies_path)})
+
+
 @app.route('/download', methods=['POST'])
 def download():
     """API endpoint to download video/audio"""
