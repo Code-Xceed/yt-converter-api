@@ -1,8 +1,10 @@
 import os
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # Add CORS support
 from yt_dlp import YoutubeDL
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for frontend requests
 
 # Define download folder
 DOWNLOAD_FOLDER = "downloads"
@@ -11,7 +13,7 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 def download_video(url, format="mp4"):
     """Downloads YouTube video/audio using yt_dlp with cookies.txt"""
 
-    # Path to cookies.txt (make sure it's in the same folder as app.py)
+    # Path to cookies.txt
     cookies_path = os.path.join(os.path.dirname(__file__), "cookies.txt")
 
     options = {
@@ -19,13 +21,17 @@ def download_video(url, format="mp4"):
         'merge_output_format': format,
         'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
         'quiet': True,
-        'cookiefile': cookies.txt  # Use the cookies.txt file
+        'cookiefile': cookies.txt # Use the cookies.txt file
     }
 
     with YoutubeDL(options) as ydl:
         info = ydl.extract_info(url, download=True)
         filename = ydl.prepare_filename(info)
         return filename
+
+@app.route('/')
+def home():
+    return "YT Converter API is running!"
 
 @app.route('/download', methods=['POST'])
 def download():
