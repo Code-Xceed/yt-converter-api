@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # Import CORS
 import os
 import threading
 from yt_dlp import YoutubeDL
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all requests
 
 # Define download folder
 DOWNLOAD_FOLDER = "downloads"
