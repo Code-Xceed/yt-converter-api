@@ -14,7 +14,7 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 def download_video(url, format="mp4", quality="best"):
     """Downloads YouTube video/audio using yt_dlp"""
     options = {
-        'format': f'bestvideo[height<={quality}]+bestaudio/best' if format == "mp4" else 'bestaudio/best',
+        'format': 'bestvideo+bestaudio/best' if format == "mp4" else 'bestaudio/best',
         'merge_output_format': format,
         'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
         'quiet': True
