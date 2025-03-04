@@ -13,15 +13,14 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 def download_video(url, format="mp4"):
     """Downloads YouTube video/audio using yt-dlp with cookies from an environment variable"""
 
-    # Get cookies from environment variable
-    youtube_cookies = os.environ.get("YOUTUBE_COOKIES", "")
-
     options = {
         'format': 'bestvideo+bestaudio/best' if format == "mp4" else 'bestaudio/best',
         'merge_output_format': format,
         'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
         'quiet': False,
-        'cookie': youtube_cookies  # Pass cookies directly as a string
+        'user_agent': os.environ.get("YOUTUBE_USER_AGENT", ""),  # Use stored User-Agent
+        'cookie': os.environ.get("YOUTUBE_COOKIES", ""),  # Use stored cookies
+        'noprogress': True  # Removes unnecessary logs
     }
 
     try:
@@ -31,6 +30,7 @@ def download_video(url, format="mp4"):
             return filename
     except Exception as e:
         return str(e)
+
 
 
 
