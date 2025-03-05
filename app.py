@@ -1,10 +1,10 @@
 import os
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Enable CORS for frontend
+from flask_cors import CORS
 from yt_dlp import YoutubeDL
 
 app = Flask(__name__)
-CORS(app)  # Allow frontend to access API
+CORS(app)  # Allow frontend access
 
 # Define download folder
 DOWNLOAD_FOLDER = "downloads"
@@ -18,10 +18,18 @@ def download_video(url, format="mp4"):
         'merge_output_format': format,
         'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
         'quiet': False,
-        'user_agent': os.environ.get("YOUTUBE_USER_AGENT", ""),  # Use stored User-Agent
-        'cookie': os.environ.get("YOUTUBE_COOKIES", ""),  # Use stored cookies
-        'noprogress': True  # Removes unnecessary logs
+        'noprogress': True,
     }
+
+    # Get cookies from Render environment variable
+    youtube_cookies = os.environ.get("YOUTUBE_COOKIES", None)
+    youtube_user_agent = os.environ.get("YOUTUBE_USER_AGENT", None)
+
+    if youtube_cookies:
+        options["cookie"] = youtube_cookies
+
+    if youtube_user_agent:
+        options["user_agent"] = youtube_user_agent
 
     try:
         with YoutubeDL(options) as ydl:
@@ -31,18 +39,9 @@ def download_video(url, format="mp4"):
     except Exception as e:
         return str(e)
 
-
-
-
-
 @app.route('/')
 def home():
     return "YT Converter API is running!"
-
-@app.route('/check-cookies')
-def check_cookies():
-    cookies_path = os.path.join(os.path.dirname(__file__), "cookies.txt")
-    return jsonify({"cookies_file_exists": os.path.exists(cookies_path)})
 
 @app.route('/download', methods=['POST'])
 def download():
